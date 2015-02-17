@@ -26,3 +26,14 @@ node_modules
 
 # Users Environment Variables
 .lock-wscript
+
+# Release file
+public/index.html
+public/build
+
+# Certificates
+certs/*.pem
+
+# User data
+/config.js
+data.sqlite3
