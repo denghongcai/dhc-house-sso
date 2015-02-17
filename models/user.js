@@ -56,26 +56,33 @@ exports.Active = function(data, cb) {
             cb('not found');
         }
         else {
-            models.Users.findOne({
-                where: {
-                    uid: credential.uid
-                }
-            }).complete(function(err, user){
-                if(!!err) {
-                    cb(err);
-                }
-                else if(!credential) {
-                    cb('not found');
-                }
-                else {
-                    user.active = true;
-                    user.save().then(function(){
-                        cb(undefined);
-                    }).catch(function(err){
-                        cb(err)
-                    });
-                }
-            });
+            var expiredAt = (new Date(credential.updatedAt));
+            expiredAt.setDate(expiredAt.getDate() + 3);
+            if(expiredAt.getTime() > new Date().getTime()) {
+                models.Users.findOne({
+                    where: {
+                        uid: credential.uid
+                    }
+                }).complete(function (err, user) {
+                    if (!!err) {
+                        cb(err);
+                    }
+                    else if (!credential) {
+                        cb('not found');
+                    }
+                    else {
+                        user.active = true;
+                        user.save().then(function () {
+                            cb(undefined);
+                        }).catch(function (err) {
+                            cb(err)
+                        });
+                    }
+                });
+            }
+            else {
+                cb('expired');
+            }
         }
     });
 };
@@ -93,10 +100,19 @@ exports.Preactive = function(data, cb) {
             cb('not found');
         }
         else {
-            models.UserActiveCredentials.create({}).then(function(credential){
-                user.setActiveCredential(credential).then(function(){
-                    cb(undefined, credential.activeID);
-                });
+            user.getActiveCredential().then(function(credential){
+                var expiredAt = (new Date(credential.updatedAt));
+                expiredAt.setMinutes(expiredAt.getMinutes() + 1);
+                if(expiredAt.getTime() < new Date().getTime()) {
+                    models.UserActiveCredentials.create({}).then(function(credential){
+                        user.setActiveCredential(credential).then(function(){
+                            cb(undefined, credential.activeID);
+                        });
+                    });
+                }
+                else {
+                    cb('retry');
+                }
             });
         }
     });
