@@ -101,17 +101,25 @@ exports.Preactive = function(data, cb) {
         }
         else {
             user.getActiveCredential().then(function(credential){
-                var expiredAt = (new Date(credential.updatedAt));
-                expiredAt.setMinutes(expiredAt.getMinutes() + 1);
-                if(expiredAt.getTime() < new Date().getTime()) {
-                    models.UserActiveCredentials.create({}).then(function(credential){
-                        user.setActiveCredential(credential).then(function(){
+                if(credential !== null) {
+                    var expiredAt = (new Date(credential.updatedAt));
+                    expiredAt.setTime(expiredAt.getTime() + 60000);
+                    if (expiredAt.getTime() < new Date().getTime()) {
+                        credential.updatedAt = new Date();
+                        user.setActiveCredential(credential).then(function () {
+                            cb(undefined, credential.activeID);
+                        });
+                    }
+                    else {
+                        cb('retry');
+                    }
+                }
+                else {
+                    models.UserActiveCredentials.create({}).then(function (credential) {
+                        user.setActiveCredential(credential).then(function () {
                             cb(undefined, credential.activeID);
                         });
                     });
-                }
-                else {
-                    cb('retry');
                 }
             });
         }

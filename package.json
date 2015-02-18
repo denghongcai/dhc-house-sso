@@ -20,7 +20,7 @@
     "lokijs": "^1.1.15",
     "morgan": "^1.5.1",
     "nodemailer": "^1.3.0",
-    "nodemailer-smtp-transport": "^0.1.13",
+    "nodemailer-mailgun-transport": "^1.0.0",
     "reactify": "^1.0.0",
     "serve-favicon": "^2.2.0",
     "sqlite3": "^3.0.4",

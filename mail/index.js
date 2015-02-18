@@ -2,10 +2,10 @@ var config = require('../config')
     ,log = require('../log')
     ,events = require('events')
     ,nodemailer = require('nodemailer')
-    ,smtpTransport = require('nodemailer-smtp-transport');
+    ,mailgunTransport = require('nodemailer-mailgun-transport');
 
 var transport = nodemailer.createTransport(
-    smtpTransport(config.mail.options)
+    mailgunTransport(config.mail.options)
 );
 
 var emitter = new events.EventEmitter();
@@ -17,7 +17,7 @@ emitter.on('send', function(mailOptions){
             log.error(err);
         }
         else {
-            log.info('E-mail sent: ', info.response);
+            log.info('E-mail sent: ', info);
         }
     });
 });
