@@ -63,9 +63,9 @@ app.use(function(err, req, res){
 app.set('port', config.port);
 app.set('x-powered-by', false); // disable 'x-powered-by' in header
 
-var privateKey = fs.readFileSync(path.join(__dirname, 'certs/privatekey.pem'));
-var certificate = fs.readFileSync(path.join(__dirname, 'certs/certificate.pem'));
-var ca = fs.readFileSync(path.join(__dirname, 'certs/ca.pem'));
+var privateKey = fs.readFileSync(config.tls.privateKey);
+var certificate = fs.readFileSync(config.tls.certificate);
+var ca = fs.readFileSync(config.tls.ca);
 
 var server = https.createServer({
     key: privateKey,
